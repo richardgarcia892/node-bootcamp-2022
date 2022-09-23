@@ -1,0 +1,58 @@
+/*
+Script to import or delte all data in the database
+Data is imported from tours-simple.json
+
+this script must be called with either --import or --delete argument
+*/
+const fs = require('fs');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const Tour = require('./../../models/tourModel');
+
+dotenv.config({ path: './config.env' });
+
+const { DB_USER, DB_PASS, DB_HOST, DB_NAME, DB_PORT } = process.env;
+
+const dbConString = `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`;
+
+const dbConOptions = {
+  useNewUrlParser: true
+  // useCreateIndex: true,
+  // useFindAndModify: false
+};
+
+mongoose
+  .connect(dbConString, dbConOptions)
+  .then(() => console.log('Connection successfull'))
+  .catch(err => console.log(err.message));
+
+// Read Json File
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'));
+// Import DATA into DB
+const importData = async () => {
+  try {
+    await Tour.create(tours);
+    console.log('Data Successfully loaded!');
+  } catch (err) {
+    console.log(err);
+  }
+  process.exit();
+};
+
+// Delete All Data From DB
+const deleteData = async () => {
+  try {
+    await Tour.deleteMany();
+    console.log('Data successfully Deleted');
+  } catch (err) {
+    console.log(err);
+  }
+  process.exit();
+};
+
+// Console log de arguments to create an small CLI for this script
+// console.log(process.argv);
+
+if (!process.argv[2]) console.log('No argument specified, use either --import or --delete');
+if (process.argv[2] === '--import') importData();
+if (process.argv[2] === '--delete') deleteData();
