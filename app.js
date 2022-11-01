@@ -1,9 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 
-const AppError = require('./utils/appError');
+const errorController = require('./controllers/errorController');
 
-const globalErrorHandler = require('./controllers/errorController');
 // Import Routers
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -23,13 +22,9 @@ app.use((req, res, next) => {
 // SET ROUTERS ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/users', userRouter);
 
-app.all('*', (req, res, next) => {
-  const error = new AppError(`Can't find ${req.originalUrl}`, 404);
-  // Whenever an argument is passed to next, express will handle this as an error
-  next(error);
-});
-
-app.use(globalErrorHandler);
+app.all('*', errorController.endpointNotFound);
+app.use(errorController.globalErrorHandler); // USE Global Error handler as the last middleware
 
 module.exports = app;

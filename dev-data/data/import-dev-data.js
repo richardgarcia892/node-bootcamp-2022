@@ -5,26 +5,14 @@ Data is imported from tours-simple.json
 this script must be called with either --import or --delete argument
 */
 const fs = require('fs');
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Tour = require('./../../models/tourModel');
+const dbConnect = require('../../db/connect');
 
 dotenv.config({ path: './config.env' });
 
-const { DB_USER, DB_PASS, DB_HOST, DB_NAME, DB_PORT } = process.env;
-
-const dbConString = `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`;
-
-const dbConOptions = {
-  useNewUrlParser: true
-  // useCreateIndex: true,
-  // useFindAndModify: false
-};
-
-mongoose
-  .connect(dbConString, dbConOptions)
-  .then(() => console.log('Connection successfull'))
-  .catch(err => console.log(err.message));
+if (process.env.DB_TYPE === 'ATLAS') dbConnect.atlas();
+if (process.env.DB_TYPE === 'DOCKER') dbConnect.docker();
 
 // Read Json File
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'));
