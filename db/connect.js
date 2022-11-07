@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+const { DB_TYPE } = process.env;
 /**
  * @name docker
  * @description connect to docker database using parameter from config.env docker DB.
@@ -16,10 +17,8 @@ exports.docker = () => {
     // useFindAndModify: false
   };
 
-  mongoose
-    .connect(dbConString, dbConOptions)
-    .then(() => console.log('Connection successfull'))
-    .catch(err => console.log(err.message));
+  mongoose.connect(dbConString, dbConOptions).then(() => console.log(DB_TYPE, 'Connection successfull'));
+  // .catch(err => console.log(err.message));
 };
 
 /**
@@ -37,8 +36,6 @@ exports.atlas = () => {
     useUnifiedTopology: true
   };
 
-  mongoose
-    .connect(dbConString, dbConOptions)
-    .then(() => console.log('Connection successfull'))
-    .catch(err => console.log(err.message));
+  mongoose.connect(dbConString, dbConOptions).then(() => console.log(DB_TYPE, 'Connection successfull'));
+  // .catch(err => console.log(err.message));
 };
