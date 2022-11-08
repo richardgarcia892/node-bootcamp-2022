@@ -22,7 +22,6 @@ app.use((req, res, next) => {
 // SET ROUTERS ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/users', userRouter);
 
 app.all('*', errorController.endpointNotFound);
 app.use(errorController.globalErrorHandler); // USE Global Error handler as the last middleware
