@@ -1,66 +1,83 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+// const validator = require('validator');
 
-// Create mongoose Schema to define the document structure
 const tourSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Tour Name is required'],
+      required: [true, 'A tour must have a name'],
       unique: true,
-      minLength: [10, 'Name is too short'],
-      maxLength: [50, 'name is too long']
+      trim: true,
+      maxlength: [40, 'A tour name must have less or equal then 40 characters'],
+      minlength: [10, 'A tour name must have more or equal then 10 characters']
+      // validate: [validator.isAlpha, 'Tour name must only contain characters']
     },
-    slug: { type: String },
+    slug: String,
     duration: {
       type: Number,
-      required: [true, 'Tour duration is required']
+      required: [true, 'A tour must have a duration']
     },
     maxGroupSize: {
       type: Number,
-      required: [true, 'Tour group size is required']
+      required: [true, 'A tour must have a group size']
     },
     difficulty: {
       type: String,
-      required: [true, 'Tour Difficulty is required'],
+      required: [true, 'A tour must have a difficulty'],
       enum: {
         values: ['easy', 'medium', 'difficult'],
-        message: 'Difficulty must be easy, medium or difficult'
+        message: 'Difficulty is either: easy, medium, difficult'
       }
     },
-    ratingsAverage: { type: Number, default: 0 },
-    ratingsQuantity: { type: Number, default: 0 },
+    ratingsAverage: {
+      type: Number,
+      default: 4.5,
+      min: [1, 'Rating must be above 1.0'],
+      max: [5, 'Rating must be below 5.0']
+    },
+    ratingsQuantity: {
+      type: Number,
+      default: 0
+    },
     price: {
       type: Number,
-      required: [true, 'Tour price is required']
+      required: [true, 'A tour must have a price']
     },
     priceDiscount: {
       type: Number,
-      validate: function(value) {
-        // CUstom validator should always return a Boolean true / false
-        // Only applies for new documents, not for update operations
-        return value < this.price; // check if the value is greater than the discount, otherwhise the discount is not valid
-      },
-      message: 'Discount price should be lower than original price'
+      validate: {
+        validator: function(val) {
+          // this only points to current doc on NEW document creation
+          return val < this.price;
+        },
+        message: 'Discount price ({VALUE}) should be below regular price'
+      }
     },
-    summary: { type: String, trim: true },
+    summary: {
+      type: String,
+      trim: true,
+      required: [true, 'A tour must have a description']
+    },
     description: {
       type: String,
-      required: [true, 'Description is required'],
       trim: true
     },
     imageCover: {
       type: String,
-      required: [true, 'imageCover is required']
+      required: [true, 'A tour must have a cover image']
     },
-    images: [{ type: String }],
+    images: [String],
     createdAt: {
       type: Date,
       default: Date.now(),
-      select: false // Sets this field to not be returned on querys
+      select: false
     },
-    startDates: [{ type: Date }],
-    secretTour: { type: Boolean, default: false }
+    startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      default: false
+    }
   },
   {
     toJSON: { virtuals: true },
@@ -69,46 +86,47 @@ const tourSchema = new mongoose.Schema(
 );
 
 tourSchema.virtual('durationWeeks').get(function() {
-  return Math.floor(this.duration / 7);
+  return this.duration / 7;
 });
 
-//DOCUMENT MIDDLEWARE: Runs Before .save() and .create()
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function(next) {
-  // traditional function needs to be used as arrow doesnt have access to this keyword
-  this.slug = slugify.default(this.name, { lower: true });
-  next(); // Mongoosee middleware works just like express middleware, so next keyword stands to jump to next middleware function
+  this.slug = slugify(this.name, { lower: true });
+  next();
 });
 
-// Mongoose middleware are also called hooks, multiple middlewares can be defined for the same hook
 // tourSchema.pre('save', function(next) {
-//   console.log(this);
+//   console.log('Will save document...');
 //   next();
 // });
 
 // tourSchema.post('save', function(doc, next) {
-//   console.log(this);
+//   console.log(doc);
 //   next();
 // });
 
 // QUERY MIDDLEWARE
+// tourSchema.pre('find', function(next) {
 tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });
+
   this.start = Date.now();
   next();
 });
 
-tourSchema.post(/^find/, function(doc, next) {
-  console.log(`Query duration (ms): ${Date.now() - this.start}`);
+tourSchema.post(/^find/, function(docs, next) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds!`);
   next();
 });
 
-// AGGREGATION Middleware has access to agreggate object
+// AGGREGATION MIDDLEWARE
 tourSchema.pre('aggregate', function(next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+
+  console.log(this.pipeline());
   next();
 });
 
-// Create the final model object (used to perform CRUD operations)
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
