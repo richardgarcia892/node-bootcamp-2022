@@ -21,11 +21,13 @@ app.use(helmet());
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 // Limit requests from same API
-const limiter = rateLimit({
+const limiterTimer = 60 * 60 * 1000;
+const limiterOptions = {
   max: 100,
-  windowMs: 60 * 60 * 1000,
-  message: 'Too many requests from this IP, please try again in an hour!'
-});
+  windowMs: limiterTimer,
+  message: `Too many requests from this IP, please try again ${limiterTimer / 1000} Seconds`
+};
+const limiter = rateLimit(limiterOptions);
 app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
@@ -38,11 +40,8 @@ app.use(mongoSanitize());
 app.use(xss());
 
 // Prevent parameter pollution
-app.use(
-  hpp({
-    whitelist: ['duration', 'ratingsQuantity', 'ratingsAverage', 'maxGroupSize', 'difficulty', 'price']
-  })
-);
+const hppWhitelist = ['duration', 'ratingsQuantity', 'ratingsAverage', 'maxGroupSize', 'difficulty', 'price'];
+app.use(hpp({ whitelist: hppWhitelist }));
 
 // Serving static files
 app.use(express.static(`${__dirname}/public`));
