@@ -10,12 +10,13 @@ const Tour = require('./../../models/tourModel');
 const dbConnect = require('../../db/connect');
 
 dotenv.config({ path: './config.env' });
+const { DB_TYPE } = process.env;
 
-if (process.env.DB_TYPE === 'ATLAS') dbConnect.atlas();
-if (process.env.DB_TYPE === 'DOCKER') dbConnect.docker();
+if (DB_TYPE === 'ATLAS') dbConnect.atlas();
+if (DB_TYPE === 'DOCKER') dbConnect.docker();
 
 // Read Json File
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'));
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 // Import DATA into DB
 const importData = async () => {
   try {
