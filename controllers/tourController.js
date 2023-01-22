@@ -29,7 +29,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 });
 
 exports.getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate('reviews');
   // Tour.findOne({ _id: req.params.id })
 
   if (!tour) {
@@ -45,6 +45,8 @@ exports.getTour = catchAsync(async (req, res, next) => {
 });
 
 exports.createTour = catchAsync(async (req, res, next) => {
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  if (!req.body.user) req.body.user = req.user.id;
   const newTour = await Tour.create(req.body);
 
   res.status(201).json({

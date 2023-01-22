@@ -100,8 +100,16 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// Create week duration virtual
 tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
+});
+
+// populate tour with the reviews virtual propertie
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id'
 });
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
@@ -111,23 +119,27 @@ tourSchema.pre('save', function(next) {
 });
 
 // QUERY MIDDLEWARE
+// Hide guides and some other parameters from populate.
 tourSchema.pre(/^find/, function(next) {
   this.populate([{ path: 'guides', select: '-__v -passwordChangedAt' }]);
   next();
 });
 
+// Hide secrets tours from find
 tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });
   this.start = Date.now();
   next();
 });
 
+// Add query timer
 tourSchema.post(/^find/, function(docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds!`);
   next();
 });
 
 // AGGREGATION MIDDLEWARE
+// Hide secret tours from aggregation queries.
 tourSchema.pre('aggregate', function(next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   // console.log(this.pipeline());
