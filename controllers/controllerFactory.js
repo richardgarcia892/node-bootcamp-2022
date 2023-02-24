@@ -63,7 +63,7 @@ exports.updateOne = Model =>
     });
 
     if (!document) return next(new AppError(`${modelName} with ID ${req.params.id} not found`, 404));
-    req.status(200).json({
+    res.status(200).json({
       status: 'success',
       data: { [modelName]: document }
     });

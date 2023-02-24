@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 
-dotenv.config({ path: './config.env' }); // Load .env Data as environment variables
+dotenv.config({ path: './.env' }); // Load .env Data as environment variables
 
 const app = require('./app'); // Create and config the app object
 const dbConnect = require('./db/connect');
