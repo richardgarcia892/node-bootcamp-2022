@@ -81,7 +81,7 @@ const tourSchema = new mongoose.Schema(
     },
     startLocation: {
       type: { type: String, default: 'Point', enum: ['Point'] },
-      coordinates: [Number],
+      coordinates: { type: [Number], default: [0, 0] },
       address: String,
       description: String
     },
@@ -104,6 +104,9 @@ const tourSchema = new mongoose.Schema(
 // INDEXES
 tourSchema.indexes({ price: 1, ratingsAverage: -1 }); //Compound Index
 tourSchema.indexes({ slug: 1 }); // Individual index
+
+tourSchema.index({ startLocation: '2dsphere' });
+
 // Create week duration virtual
 tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
@@ -144,11 +147,12 @@ tourSchema.post(/^find/, function(docs, next) {
 
 // AGGREGATION MIDDLEWARE
 // Hide secret tours from aggregation queries.
-tourSchema.pre('aggregate', function(next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  // console.log(this.pipeline());
-  next();
-});
+// tourSchema.pre('aggregate', function(next) {
+//   // TODO: Add a condition to only aggregate this if the first aggregation is not $geoNear
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   // console.log(this.pipeline());
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 
