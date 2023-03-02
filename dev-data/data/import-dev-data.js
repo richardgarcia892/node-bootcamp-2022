@@ -26,8 +26,11 @@ const reviews = JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8')
 // Import DATA into DB
 const importData = async () => {
   try {
+    users.forEach(async user => {
+      const newUser = await User.create({ ...user, password: 'test1234', passwordConfirm: 'test1234' });
+      console.log({ user: user._id, newUser: newUser._id });
+    });
     await Tour.create(tours);
-    users.forEach(async user => await User.create({ ...user, password: 'test1234', passwordConfirm: 'test1234' }));
     await Review.create(reviews);
     console.log('Data Successfully loaded!');
   } catch (err) {
