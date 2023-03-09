@@ -14,9 +14,16 @@ exports.getTour = catchAsync(async (req, res, next) => {
     path: 'reviews',
     fields: 'review rating user'
   });
-  console.log(tour.guides);
+  console.log(tour.reviews);
   res.status(200).render('tour', {
     title: `warandinga tours | ${tour.name}`,
     tour
   });
 });
+
+
+exports.getLoginForm =(req,res) => {
+  res.status(200).render('login',{
+    title: 'Login'
+  })
+}
