@@ -1,9 +1,13 @@
 extends base
 
 block append head
-  //- meta(http-equiv="Content-Security-Policy" content="script-src 'self' unpkg.com")
-  //- link(rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="")
-  //- script(src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="")
+  script(src='/js/map.js')
+  link(rel='stylesheet' href='https://unpkg.com/leaflet@1.9.3/dist/leaflet.css'
+     integrity='sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI='
+     crossorigin='')
+  script(src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+     crossorigin="")
 
 mixin overviewBox(label,text,icon)
   .overview-box__detail
@@ -80,7 +84,7 @@ block content
         img.picture-box__img(src=`/img/tours/${image}`, alt=`${tour.name} ${index+1}`, class=`picture-box__img--${index+1}`)
 
   section.section-map
-    //- #map(data-locations=`${JSON.stringify(tour.locations)}`)
+    #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
   section.section-reviews
     .reviews

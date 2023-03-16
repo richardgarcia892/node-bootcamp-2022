@@ -14,18 +14,23 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 
+const { defaultSrcUrls, scriptSrcUrls, connectSrcUrls, fontSrcUrls, styleSrcUrls } = require('./config/helmet.urls');
+
 const app = express();
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
-// 1) GLOBAL MIDDLEWARES
-// Set security HTTP headers
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      'script-src': ["'self'", "'unsafe-inline'", 'cdnjs.cloudflare.com']
+      defaultSrc: ["'self'", ...defaultSrcUrls],
+      scriptSrc: ["'self'", ...scriptSrcUrls],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      fontSrc: ["'self'", ...fontSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
+      workerSrc: ["'self'", 'blob:']
     }
   })
 );
