@@ -11,7 +11,9 @@
     "start:prod": "NODE_ENV=production nodemon server.js",
     "debug": "ndb server.js",
     "seed:delete": "node ./dev-data/data/import-dev-data.js --delete",
-    "seed:import": "node ./dev-data/data/import-dev-data.js --import"
+    "seed:import": "node ./dev-data/data/import-dev-data.js --import",
+    "watch:js": "parcel watch ./public/js index.js --out-dir ./public/js --out-file bundle.js",
+    "build:js": "parcel watch ./public/js index.js --out-dir ./public/js --out-file bundle.js"
   },
   "author": "Jonas Schmedtmann",
   "license": "ISC",
@@ -44,7 +46,6 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.12.4",
-    "ndb": "^1.1.5",
     "prettier": "^1.17.0"
   }
 }

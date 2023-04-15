@@ -9,9 +9,11 @@ const login = async (email, password) => {
         password
       }
     });
-    console.log(response);
+    if (response.data.status === 'success') {
+      location.assign('/');
+    }
   } catch (err) {
-    console.log(err.response);
+    console.log(err.response.data.message);
   }
 };
 
