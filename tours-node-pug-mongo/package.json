@@ -11,9 +11,7 @@
     "start:prod": "NODE_ENV=production nodemon server.js",
     "debug": "ndb server.js",
     "seed:delete": "node ./dev-data/data/import-dev-data.js --delete",
-    "seed:import": "node ./dev-data/data/import-dev-data.js --import",
-    "watch:js": "parcel watch ./public/js index.js --out-dir ./public/js --out-file bundle.js",
-    "build:js": "parcel watch ./public/js index.js --out-dir ./public/js --out-file bundle.js"
+    "seed:import": "node ./dev-data/data/import-dev-data.js --import"
   },
   "author": "Jonas Schmedtmann",
   "license": "ISC",

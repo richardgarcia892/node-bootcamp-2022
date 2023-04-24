@@ -1,5 +1,6 @@
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 exports.getOverview = catchAsync(async (req, res, next) => {
   const tours = await Tour.find();
@@ -14,7 +15,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
     path: 'reviews',
     fields: 'review rating user'
   });
-  console.log(tour.reviews);
+  if (!tour) return next(new AppError('Tour name not found', 404));
   res.status(200).render('tour', {
     title: `warandinga tours | ${tour.name}`,
     tour
