@@ -2,6 +2,9 @@
 
 import { showAlert } from './alerts.js';
 
+const loginForm = document.querySelector('.form--login');
+const logoutButton = document.querySelector('.nav__el--logout');
+
 const login = async (email, password) => {
   try {
     const response = await axios({
@@ -32,13 +35,17 @@ const logout = async () => {
       url: 'http://localhost:3000/api/v1/users/logout'
     });
     console.log(res.status);
-    if (res.status === 200) location.reload(true);
+    if (res.status === 200) {
+      window.setTimeout(() => {
+        showAlert('success', 'logged out successfully');
+        location.assign('/');
+      }, 1500);
+    }
   } catch (error) {
     showAlert('error', 'An error ocurred, please try again');
   }
 };
 
-const loginForm = document.querySelector('.form');
 if (loginForm) {
   loginForm.addEventListener('submit', e => {
     e.preventDefault();
@@ -48,5 +55,6 @@ if (loginForm) {
   });
 }
 
-const logoutButton = document.querySelector('.nav__el--logout');
-if (logoutButton) logoutButton.addEventListener('click', logout);
+if (logoutButton) {
+  logoutButton.addEventListener('click', logout);
+}

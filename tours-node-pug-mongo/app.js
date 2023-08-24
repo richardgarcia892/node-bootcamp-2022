@@ -54,7 +54,7 @@ app.use('/api', limiter);
 
 // Body parser middleware for reading data from the request body
 app.use(express.json({ limit: '10kb' }));
-
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // CookieParser middleware for handling cookies
 app.use(cookieParser());
 
