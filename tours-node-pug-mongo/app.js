@@ -18,9 +18,11 @@ const { defaultSrcUrls, scriptSrcUrls, connectSrcUrls, fontSrcUrls, styleSrcUrls
 
 const app = express();
 
+// Set the view engine to Pug and configure views directory
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
+// Apply Content Security Policy using Helmet middleware
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -35,49 +37,54 @@ app.use(
   })
 );
 
-// CONFIGURE MANDATORY MIDDLEWARES
-if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
+// Development logging using Morgan middleware
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
-// Limit requests from same API
+// Rate limiting for API requests from the same IP
 const limiterTimer = 60 * 60 * 1000;
 const limiterOptions = {
   max: 100,
   windowMs: limiterTimer,
-  message: `Too many requests from this IP, please try again ${limiterTimer / 1000} Seconds`
+  message: `Too many requests from this IP, please try again in ${limiterTimer / 1000} seconds`
 };
 const limiter = rateLimit(limiterOptions);
 app.use('/api', limiter);
 
-// Body parser, reading data from body into req.body
+// Body parser middleware for reading data from the request body
 app.use(express.json({ limit: '10kb' }));
 
-// CookieParser
+// CookieParser middleware for handling cookies
 app.use(cookieParser());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
-// Data sanitization against XSS
+// Data sanitization against Cross-Site Scripting (XSS) attacks
 app.use(xss());
 
-// Prevent parameter pollution
+// Prevent HTTP Parameter Pollution (HPP)
 const hppWhitelist = ['duration', 'ratingsQuantity', 'ratingsAverage', 'maxGroupSize', 'difficulty', 'price'];
 app.use(hpp({ whitelist: hppWhitelist }));
 
-// Serving static files
+// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// VIEW ROUTES
+// Set up routes for views
 app.use('/', viewRouter);
-// SET API ROUTERS ROUTES
+
+// Set up API routes
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/reviews', reviewRouter);
 
+// Handle requests to undefined routes
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
+// Global error handling middleware
 app.use(globalErrorHandler);
 
 module.exports = app;
