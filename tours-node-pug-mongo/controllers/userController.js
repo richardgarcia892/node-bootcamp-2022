@@ -31,21 +31,22 @@ const upload = multer({ storage: multerStorage, fileFilter: multerFileFilter });
 
 exports.uploadProfilePicture = upload.single('photo');
 
-exports.resizeProfilePicture = (req, res, next) => {
+exports.resizeProfilePicture = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
   const fileDestination = 'public/img/users';
   const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
   req.file.filename = filename;
+
   const width = parseInt(process.env.PROFILE_PICTURE_WIDTH, 10);
   const height = parseInt(process.env.PROFILE_PICTURE_HEIGHT, 10);
-  sharp(req.file.buffer)
+
+  await sharp(req.file.buffer)
     .resize(width, height)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
     .toFile(`${fileDestination}/${filename}`);
-  console.log('sharpdone');
   next();
-};
+});
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
