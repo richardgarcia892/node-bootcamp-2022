@@ -5,12 +5,12 @@ import { showAlert } from './alerts.js';
 const updateProfileForm = document.querySelector('.form-user-data');
 const updatePasswordForm = document.querySelector('.form-user-settings');
 
-const updateProfile = async (name, email) => {
+const updateProfile = async data => {
   try {
     const response = await axios({
       method: 'PATCH',
       url: 'http://localhost:3000/api/v1/users/me',
-      data: { name, email }
+      data
     });
     if (response.data.status === 'success') {
       showAlert('success', 'profile updated successfully');
@@ -49,11 +49,16 @@ const updatePassword = async (passwordCurrent, password, passwordConfirm) => {
 if (updateProfileForm) {
   updateProfileForm.addEventListener('submit', e => {
     e.preventDefault();
+    const form = new FormData();
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
+    const photo = document.getElementById('photo').files[0];
+    form.append('name', name);
+    form.append('email', email);
+    form.append('photo', photo);
     const button = document.getElementById('btn--save-profile-data');
     button.innerHTML = 'Updating info...';
-    updateProfile(name, email);
+    updateProfile(form);
   });
 }
 

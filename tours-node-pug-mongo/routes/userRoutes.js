@@ -16,7 +16,12 @@ router.use(authController.protect);
 router.patch('/updateMyPassword', authController.updatePassword);
 
 router.get('/me', userController.setCurrentUserId, userController.getUser);
-router.patch('/me', userController.updateCurrentUser);
+router.patch(
+  '/me',
+  userController.uploadProfilePicture,
+  userController.resizeProfilePicture,
+  userController.updateCurrentUser
+);
 router.delete('/me', userController.deactivateCurrentUser);
 
 router.use(authController.restrictTo('admin'));
