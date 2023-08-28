@@ -1,5 +1,5 @@
-const multer = require('multer');
 const sharp = require('sharp');
+const multer = require('multer');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
@@ -26,25 +26,18 @@ const multerFileFilter = (req, file, cb) => {
     cb(new AppError('The file you are trying to upload is not an image', 400), false);
   }
 };
-
-const upload = multer({ storage: multerStorage, fileFilter: multerFileFilter });
-
-exports.uploadProfilePicture = upload.single('photo');
+exports.uploadProfilePicture = multer({ storage: multerStorage, fileFilter: multerFileFilter }).single('photo');
 
 exports.resizeProfilePicture = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
   const fileDestination = 'public/img/users';
-  const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-  req.file.filename = filename;
-
-  const width = parseInt(process.env.PROFILE_PICTURE_WIDTH, 10);
-  const height = parseInt(process.env.PROFILE_PICTURE_HEIGHT, 10);
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
   await sharp(req.file.buffer)
-    .resize(width, height)
+    .resize(parseInt(process.env.PROFILE_PICTURE_WIDTH, 10), parseInt(process.env.PROFILE_PICTURE_HEIGHT, 10))
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
-    .toFile(`${fileDestination}/${filename}`);
+    .toFile(`${fileDestination}/${req.file.filename}`);
   next();
 });
 
