@@ -7,6 +7,8 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
+
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
@@ -68,6 +70,8 @@ app.use(xss());
 // Prevent HTTP Parameter Pollution (HPP)
 const hppWhitelist = ['duration', 'ratingsQuantity', 'ratingsAverage', 'maxGroupSize', 'difficulty', 'price'];
 app.use(hpp({ whitelist: hppWhitelist }));
+
+app.use(compression());
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));

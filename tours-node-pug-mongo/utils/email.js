@@ -30,7 +30,6 @@ module.exports = class Email {
         pass: process.env.MAILTRAP_EMAIL_PASSWORD
       };
     }
-    console.log(process.env.NODE_ENV, host, port, auth);
     const transporter = nodemailer.createTransport({ host, port, auth });
     return transporter;
   }

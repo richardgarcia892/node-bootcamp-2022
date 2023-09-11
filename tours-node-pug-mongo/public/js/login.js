@@ -34,7 +34,6 @@ const logout = async () => {
       method: 'GET',
       url: 'http://localhost:3000/api/v1/users/logout'
     });
-    console.log(res.status);
     if (res.status === 200) {
       window.setTimeout(() => {
         showAlert('success', 'logged out successfully');
