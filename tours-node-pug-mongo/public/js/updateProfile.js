@@ -9,7 +9,7 @@ const updateProfile = async data => {
   try {
     const response = await axios({
       method: 'PATCH',
-      url: 'http://localhost:3000/api/v1/users/me',
+      url: '/api/v1/users/me',
       data
     });
     if (response.data.status === 'success') {
@@ -29,11 +29,11 @@ const updatePassword = async (passwordCurrent, password, passwordConfirm) => {
   try {
     const response = await axios({
       method: 'PATCH',
-      url: 'http://localhost:3000/api/v1/users/updateMyPassword',
+      url: '/api/v1/users/updateMyPassword',
       data: { passwordCurrent, password, passwordConfirm }
     });
     if (response.data.status === 'success') {
-      await axios({ method: 'GET', url: 'http://localhost:3000/api/v1/users/logout' });
+      await axios({ method: 'GET', url: '/api/v1/users/logout' });
       showAlert('success', 'Password updated successfully, please log in again');
       window.setTimeout(() => {
         location.assign('/');

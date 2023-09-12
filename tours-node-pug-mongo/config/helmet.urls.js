@@ -14,8 +14,8 @@ exports.connectSrcUrls = [
   'https://unpkg.com',
   'https://tile.openstreetmap.org',
   'https://*.cloudflare.com',
-  'http://localhost:8000/api/v1/users/login',
-  'http://localhost/api/v1/bookings/checkout-session/'
+  '/api/v1/users/login',
+  '/api/v1/bookings/checkout-session/'
 ];
 
 exports.fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
