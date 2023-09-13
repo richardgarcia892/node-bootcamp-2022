@@ -80,6 +80,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', viewRouter);
 
 // Set up API routes
+app.use('/api/v1/ping', (req, res, next) => res.status(200).json({ status: 'running' }));
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/reviews', reviewRouter);
