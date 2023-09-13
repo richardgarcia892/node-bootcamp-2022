@@ -8,6 +8,7 @@ const hpp = require('hpp');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -16,10 +17,21 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const bookingController = require('./controllers/bookingController');
 
 const { defaultSrcUrls, scriptSrcUrls, connectSrcUrls, fontSrcUrls, styleSrcUrls } = require('./config/helmet.urls');
 
 const app = express();
+
+// Enable trust proxy (for deployment on render)
+app.enable('trust proxy');
+
+// Enable cors
+app.use(cors());
+
+// apply cors to prefligth methods
+// app.options('/api/v1/', cors());
+app.options('*', cors());
 
 // Set the view engine to Pug and configure views directory
 app.set('view engine', 'pug');
@@ -54,6 +66,13 @@ const limiterOptions = {
 };
 const limiter = rateLimit(limiterOptions);
 app.use('/api', limiter);
+
+// Stripe webhooks need to use raw bodyparser
+app.post(
+  '/api/webhooks/stripe/checkout-session-completed',
+  express.raw({ type: 'application/json' }),
+  bookingController.createBookingCheckoutHandler
+);
 
 // Body parser middleware for reading data from the request body
 app.use(express.json({ limit: '10kb' }));
