@@ -24,7 +24,7 @@ const { defaultSrcUrls, scriptSrcUrls, connectSrcUrls, fontSrcUrls, styleSrcUrls
 const app = express();
 
 // Enable trust proxy (for deployment on render)
-app.enable('trust proxy');
+// app.enable('trust proxy');
 
 // Enable cors
 app.use(cors());
